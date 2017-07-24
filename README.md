@@ -26,5 +26,5 @@ I would use
     }
 ```
 
-
+The Java compiler is able to easily optimize such readability formatting.
 

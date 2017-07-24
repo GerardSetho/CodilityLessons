@@ -1,60 +1,63 @@
 package net.gerardsetho.codility.iterations;
 
-/**
- * Created by gerard on 29/6/17.
- * https://codility.com/programmers/lessons/1-iterations/binary_gap/
- */
+
+import org.junit.Test;
+
+import static org.junit.Assert.assertEquals;
+
 public class BinaryGap {
-    public static void main(String[] args) {
-        int N = 1041;
-        final int answer = new BinaryGap().solution(N);
-        System.out.println("Answer is " + Integer.toString(answer));
+
+    @Test
+    public void testSolution() {
+        assertEquals(3, new BinaryGap().solution(561892));
     }
 
-
     public int solution(int N) {
-
-        int mask = 0x0001;
-
-        int longestBinaryGap = 0;
-
-        int counter = -1; // -1 = counter not started.
-
+        // Look for the first 1
+        int first1Index = 0;
         for (int i = 0; i < 32; i++) {
-
-            // shift the current bit to the right most bit
-            int currentN = N >> i;
-
-            // and extract the right most bit
-            int rightMostBit = currentN & mask;
-
-            if (rightMostBit == 1) {
-                // if counter is not started, start the counter.
-                if (counter == -1) {
-                    counter = 0;
-                } else {
-                    // if counter is started, check if this is the longest binary Gap
-                    if (counter > longestBinaryGap) {
-                        longestBinaryGap = counter;
-                    }
-                    // and reset the counter.
-                    counter = 0;
-                }
-
-            } else {
-                // if counter is not started, do nothing.
-                if (counter == -1) {
-                } else {
-                    // if counter is started, increment the counter.
-                    counter++;
-                }
+            if (getNthBit(N, i) == 1) {
+                first1Index = i;
+                break;
             }
+        }
 
+        // From now on every 1 is a beginnin of the end of a Binary Gap
+        int currentGap = 0;
+        int biggestGap = 0;
+
+        // We check the next bit.
+        for (int i = first1Index; i < 32; i++) {
+            // If its a zero,
+            if (getNthBit(N, i) == 0) {
+
+                // we increment the current Gap by 1
+                currentGap++;
+            } else {
+                // If its a 1, then that is the end of the most recent binary gap.
+
+                // we check if its the biggest gap so far
+                if (currentGap > biggestGap) {
+                    // If so, we update the biggest gap
+                    biggestGap = currentGap;
+
+                }
+                // This is the end of the current gap.
+                currentGap = 0;
+
+            }
 
         }
 
 
-        return longestBinaryGap;
+        // We do this until the end of the 32 bit integer.
+
+        return biggestGap;
     }
 
+    private int getNthBit(int theNumber, int bitPosition) {
+        int mask = 1;
+        final int theNumberShifted = theNumber >> bitPosition;
+        return theNumberShifted & mask;
+    }
 }
